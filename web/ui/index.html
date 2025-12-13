@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>MCP Agent Web UI</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>MCP Agent Web UI</h1>
+    <p class="subtitle">二次元主題生成 ＋ 多語言貼文助手</p>
+  </header>
+
+<section class="panel" id="llm-panel">
+  <h2>⚙️ LLM Settings</h2>
+
+  <div class="field">
+    <label for="llm-provider">Provider</label>
+    <select id="llm-provider">
+      <option value="api">API (OpenAI / cloud)</option>
+      <option value="vllm">vLLM (local server)</option>
+      <option value="llama_cpp">llama.cpp (local GGUF)</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="llm-model">Model name</label>
+    <input id="llm-model" type="text" placeholder="gpt-4.1-mini or my-vllm-model" />
+  </div>
+
+  <!-- 新增：llama.cpp 專用的 model 下拉 -->
+  <div class="field" id="llm-model-select-wrapper" style="display:none;">
+    <label for="llm-model-select">GGUF model (for llama.cpp)</label>
+    <select id="llm-model-select">
+      <option value="">(Select a model from /models)</option>
+    </select>
+    <p class="small-note">
+      Files are read from <code>models/</code> folder in your project.
+    </p>
+  </div>
+
+  <div class="field">
+    <label for="llm-base-url">Base URL (for vLLM / custom API)</label>
+    <input id="llm-base-url" type="text" placeholder="https://api.openai.com/v1 or http://localhost:8000/v1" />
+  </div>
+
+  <p class="small-note">
+    For provider = "llama.cpp", base URL is ignored; selected GGUF file will be used.
+  </p>
+</section>
+
+
+  <main class="layout">
+    <!-- 🎨 主題生成 -->
+    <section class="panel" id="theme-panel">
+      <h2>🎨 主題生成 (ThemeAgent)</h2>
+
+      <form id="theme-form">
+        <div class="field">
+          <label for="season">季節 (season)</label>
+          <select id="season" name="season">
+            <option value="">任意</option>
+            <option value="spring">春</option>
+            <option value="summer">夏</option>
+            <option value="autumn">秋</option>
+            <option value="winter">冬</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="focus">主題重點 (focus)</label>
+          <input
+            id="focus"
+            name="focus"
+            type="text"
+            placeholder="例如：frilled_bikini / school_uniform / idol_stage"
+          />
+        </div>
+
+        <div class="field">
+          <label for="platform">平台 (platform)</label>
+          <select id="platform" name="platform">
+            <option value="x">X / Twitter</option>
+            <option value="pixiv">Pixiv</option>
+            <option value="patreon">Patreon</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="count">生成個數 (count)</label>
+          <input id="count" name="count" type="number" min="1" max="10" value="3" />
+        </div>
+
+        <button type="submit" class="btn primary">生成主題</button>
+      </form>
+
+      <div id="theme-result" class="result-block">
+        <h3>結果 (Themes)</h3>
+        <div id="theme-list" class="cards"></div>
+      </div>
+    </section>
+
+    <!-- 📝 貼文生成 -->
+    <section class="panel" id="post-panel">
+      <h2>📝 貼文生成 (PostWriterAgent)</h2>
+
+      <form id="post-form">
+        <div class="field">
+          <label for="post-platform">平台 (platform)</label>
+          <select id="post-platform" name="platform">
+            <option value="x">X / Twitter</option>
+            <option value="pixiv">Pixiv</option>
+            <option value="patreon">Patreon</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>語言 (languages)</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="languages" value="ja" checked /> 日本語 (ja)</label>
+            <label><input type="checkbox" name="languages" value="zh" /> 中文 (zh)</label>
+            <label><input type="checkbox" name="languages" value="en" /> English (en)</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="art-title">作品標題 (title)</label>
+          <input id="art-title" type="text" placeholder="Summer Beach 1" />
+        </div>
+
+        <div class="field">
+          <label for="art-mood">氣氛描述 (mood)</label>
+          <textarea
+            id="art-mood"
+            rows="2"
+            placeholder="夕陽と海風が気持ちいい浜辺の一枚です。"
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="art-tags">主題標籤 (theme_tags, comma separated)</label>
+          <input
+            id="art-tags"
+            type="text"
+            placeholder="frilled_bikini, beach, sunset"
+          />
+        </div>
+
+        <div class="field">
+          <label for="art-characters">角色名稱 (characters, comma separated)</label>
+          <input
+            id="art-characters"
+            type="text"
+            placeholder="月村手毬, 十王星南"
+          />
+        </div>
+
+        <div class="field">
+          <label for="art-note">其他說明 (special_note)</label>
+          <textarea
+            id="art-note"
+            rows="2"
+            placeholder="例如：今晚 21:00 會公開高畫質版於 Patreon ✨"
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="tone">語氣 (tone)</label>
+          <select id="tone" name="tone">
+            <option value="">預設 (依平台設定)</option>
+            <option value="cute">cute</option>
+            <option value="serious">serious</option>
+            <option value="patreon_support">patreon_support</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn primary">生成貼文</button>
+      </form>
+
+      <div id="post-result" class="result-block">
+        <h3>結果 (Posts)</h3>
+        <div id="post-list" class="cards"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>MCP Agent Web UI — vanilla JS + FastAPI</span>
+  </footer>
+
+  <script src="/static/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "defaults": {
+    "provider": "api",
+    "model": "gpt-4.1-mini"
+  },
+  "providers": {
+    "api": {
+      "label": "Cloud API",
+      "base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY"
+    },
+    "vllm": {
+      "label": "Local vLLM",
+      "base_url": "http://localhost:8000/v1",
+      "api_key_env": "VLLM_API_KEY"
+    },
+    "llama_cpp": {
+      "label": "Local GGUF (llama.cpp)",
+      "base_url": "local",
+      "api_key_env": "NONE"
+    }
+  }
+}

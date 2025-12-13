@@ -1,0 +1,177 @@
+/* web/ui/static/styles.css */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.app-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #1f2937;
+  background: #020617;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.app-header .subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.app-footer {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #6b7280;
+  border-top: 1px solid #1f2937;
+  background: #020617;
+  text-align: right;
+}
+
+.layout {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+  }
+}
+
+.panel {
+  flex: 1;
+  background: #020617;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #1f2937;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #cbd5f5;
+}
+
+.field input[type="text"],
+.field input[type="number"],
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #374151;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+}
+
+.btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #1d4ed8;
+}
+
+.result-block {
+  margin-top: 16px;
+}
+
+.result-block h3 {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #1f2937;
+  background: #020617;
+}
+
+.card h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+
+.card .small {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.tags-pre,
+.card pre {
+  margin: 0;
+  font-size: 12px;
+  background: #020617;
+  border-radius: 4px;
+  padding: 6px;
+  border: 1px solid #111827;
+  white-space: pre-wrap;
+}
+
+.loading {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.error {
+  font-size: 13px;
+  color: #fecaca;
+}
+
+.empty {
+  font-size: 13px;
+  color: #9ca3af;
+}

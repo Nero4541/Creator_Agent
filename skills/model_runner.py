@@ -240,13 +240,15 @@ class LLMModelRunner(ModelRunnerProtocol):
     # ========= Prompt 建構 (兩階段) ========= #
 
     def _build_ideation_prompt(self, instruction: str, context: Dict[str, Any], count: int):
+        """Step 1 Prompt: 改為專注於生成詳細的自然語言描述，不生成 Tags"""
         options = context.get("options") or {}
         trend_tags = context.get("trend_tags") or []
         
         system_content = (
             "You are a creative director for anime illustrations. "
             "Brainstorm creative concepts based on the user's request. "
-            "Do not worry about JSON format yet. Just write natural descriptions."
+            "Focus on writing detailed, descriptive sentences that paint a clear picture. "
+            "Do NOT write tags or lists."
         )
         
         user_content = f"""
@@ -254,13 +256,14 @@ Request: {instruction}
 Target Count: {count}
 Season: {options.get('season', 'Any')}
 Focus: {options.get('focus', 'Any')}
-Trending Tags to consider: {', '.join(trend_tags[:10])}
+Trending Elements: {', '.join(trend_tags[:10])}
 
-Please list {count} distinct theme ideas. For each theme, describe:
-1. A catchy Title.
-2. A Short Concept (1-2 sentences).
-3. Visual Keywords (list of tags).
-4. Atmosphere/Mood.
+Please list {count} distinct theme ideas. For each theme, provide:
+1. A Title.
+2. A Detailed Visual Description (Natural Language).
+   - Describe the character(s), clothing, pose, background, lighting, and atmosphere in fluid sentences.
+   - Write like a story snippet or a detailed caption.
+   - Example: "A young girl with long silver hair stands by the window, holding a coffee mug. The morning sunlight filters through the curtains, creating a soft and warm atmosphere."
 
 Output Format: Plain text list.
 """
@@ -270,10 +273,11 @@ Output Format: Plain text list.
         ]
 
     def _build_extraction_prompt(self, raw_text: str, count: int):
+        """Step 2 Prompt: 將自然語言描述提取到 short_concept，keywords 留空給 TIPO"""
         system_content = (
-            "You are a strict data formatting assistant. "
+            "You are a data formatting assistant. "
             "Convert the provided text into a valid JSON array. "
-            "Do not add any explanations. Output ONLY the JSON."
+            "Output ONLY the JSON."
         )
         
         user_content = f"""
@@ -282,12 +286,22 @@ Source Text:
 {raw_text}
 ---
 
-Task: Extract {count} themes from the text above into a JSON array.
-Each object must have these exact keys:
+Task: Extract {count} themes into a JSON array.
+Keys:
 - "title": string
-- "short_concept": string
-- "keywords": array of strings
-- "mood": array of strings
+- "short_concept": string (The full detailed natural language description)
+- "keywords": array of strings (Leave this EMPTY [], we will generate tags later)
+- "mood": array of strings (Extract 2-3 mood words if present, else empty)
+
+Example:
+[
+  {{
+    "title": "Morning Coffee",
+    "short_concept": "A young girl with long silver hair stands by the window...",
+    "keywords": [],
+    "mood": ["soft", "warm"]
+  }}
+]
 """
         return [
             {"role": "system", "content": system_content},
